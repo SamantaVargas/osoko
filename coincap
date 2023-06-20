@@ -1,0 +1,62 @@
+import requests
+
+class Cryptocurrency:
+    def __init__(self, symbol, amount):
+        self.symbol = symbol
+        self.amount = amount
+        self.price = self.get_price()
+
+    def get_price(self):
+        url = f"https://api.coincap.io/v2/assets/{self.symbol}"
+        response = requests.get(url)
+        data = response.json()
+        if "data" in data:
+            return float(data["data"]["priceUsd"])
+        else:
+            return None
+
+    def get_value(self):
+        return self.price * self.amount
+
+portfolio = []
+
+def add_cryptocurrency():
+    symbol = input("Enter the symbol of the cryptocurrency: ").upper()
+    amount = float(input("Enter the amount of the cryptocurrency: "))
+    crypto = Cryptocurrency(symbol, amount)
+    portfolio.append(crypto)
+    print(f"{symbol} added to the portfolio.")
+
+def show_portfolio():
+    if not portfolio:
+        print("Your portfolio is empty.")
+    else:
+        total_value = 0
+        print("Portfolio:")
+        for crypto in portfolio:
+            value = crypto.get_value()
+            total_value += value
+            print(f"{crypto.symbol}: {crypto.amount} - Value: ${value:.2f}")
+        print("-------------------------")
+        print(f"Total Portfolio Value: ${total_value:.2f}")
+
+def menu():
+    while True:
+        print("\nCryptocurrency Portfolio Tracker")
+        print("1. Add Cryptocurrency")
+        print("2. Show Portfolio")
+        print("3. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            add_cryptocurrency()
+        elif choice == "2":
+            show_portfolio()
+        elif choice == "3":
+            print("Thank you for using the Cryptocurrency Portfolio Tracker. Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+menu()
